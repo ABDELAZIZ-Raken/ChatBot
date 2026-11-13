@@ -1,0 +1,132 @@
+/* ============================= */
+/* COULEURS DE LA MAQUETTE */
+/* ============================= */
+
+:root {
+    --bg: #F8F9FC;
+    --card: #FFFFFF;
+    --text: #172536;
+    --muted: #718096;
+    --line: #E5E7EB;
+    --red: #E31E35;
+    --night: #172536;
+    --soft: #FDECEE;
+
+    --g1: linear-gradient(135deg, #E31E35, #B5122A);
+    --g2: linear-gradient(135deg, #172536, #263F59);
+}
+
+
+/* ============================= */
+/* PAGE ACCUEIL */
+/* ============================= */
+
+body {
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text);
+    line-height: 1.5;
+}
+
+/* Présentation principale */
+
+.accueil-hero {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--g2);
+    color: #fff;
+    border: 0;
+}
+
+/* Logo */
+
+.accueil-logo img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Texte de présentation */
+
+.accueil-presentation {
+    flex: 1;
+    min-width: 240px;
+}
+
+.accueil-presentation h1 {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.accueil-presentation p {
+    margin-bottom: 18px;
+    color: var(--line);
+}
+
+/* Boutons */
+
+.accueil-boutons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Section des modèles */
+
+.accueil-modeles {
+    margin-top: 30px;
+}
+
+.accueil-modeles h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+    color: var(--text);
+}
+
+/* Message lorsqu'il n'y a aucun modèle */
+
+.modele-vide {
+    padding: 20px;
+    text-align: center;
+
+    background-color: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+
+    color: var(--muted);
+}
+
+.navbar {
+    background: var(--g2);
+}
+
+.bouton-connexion {
+    background: #E11D34;
+    color: white;
+    border: none;
+}
+
+.navbar-brand img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.accueil-hero card {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--g2);
+    color: #fff;
+    border-radius: 14px;
+    padding: 20px;
+}
+* {
+    box-sizing: border-box;
+}

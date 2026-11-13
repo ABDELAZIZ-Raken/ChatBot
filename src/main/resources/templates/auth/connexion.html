@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>Connexion - TodoApp</title>
+</head>
+
+<body>
+
+<main class="container py-5">
+
+  <div class="row justify-content-center">
+
+    <div class="col-md-6 col-lg-4">
+
+      <div class="card shadow-sm">
+
+        <div class="card-body p-4">
+
+          <h2 class="text-center mb-4">
+            Connexion
+          </h2>
+
+          <form>
+
+            <div class="mb-3">
+
+              <label for="email" class="form-label">
+                Adresse e-mail
+              </label>
+
+              <input type="email"
+                     class="form-control"
+                     id="email"
+                     placeholder="exemple@mail.com"
+                     required>
+
+            </div>
+
+            <div class="mb-3">
+
+              <label for="password" class="form-label">
+                Mot de passe
+              </label>
+
+              <input type="password"
+                     class="form-control"
+                     id="password"
+                     placeholder="Votre mot de passe"
+                     required>
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+              Se connecter
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+</body>
+</html>

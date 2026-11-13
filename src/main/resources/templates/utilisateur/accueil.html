@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+    <title>Accueil - Tunis'IA</title>
+</head>
+
+<body>
+
+<main>
+
+    <div class="container py-5">
+
+        <!-- Présentation de Tunis'IA -->
+        <section class="accueil-hero card">
+
+            <div class="accueil-logo ">
+                <img th:src="@{../img/logo_sinj_tounsi.png}"
+                     alt="Logo Tunis'IA">
+            </div>
+
+            <div class="accueil-presentation">
+
+                <h1>Tunis'IA</h1>
+
+                <p>
+                    Discutez avec plusieurs modèles d’intelligence
+                    artificielle et retrouvez vos échanges.
+                    Le chat est réservé aux comptes inscrits.
+                </p>
+
+                <div class="accueil-boutons">
+
+                    <a th:href="@{/connexion}"
+                       class="btn bouton-connexion">
+                        Se connecter
+                    </a>
+
+                    <a th:href="@{/inscription}"
+                       class="btn btn-outline-light">
+                        Créer un compte
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Modèles d'intelligence artificielle -->
+        <section class="accueil-modeles">
+
+            <h2>Modèles d'IA disponibles</h2>
+
+            <div class="row g-3">
+
+                <!-- Les modèles seront ajoutés ici -->
+
+                <div class="col-12">
+
+                    <div class="modele-vide">
+                        Les modèles d'IA disponibles seront affichés ici.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+</body>
+</html>
