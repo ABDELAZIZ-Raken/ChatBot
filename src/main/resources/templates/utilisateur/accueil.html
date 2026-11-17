@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr"
       xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base :: layout(~{::title}, ~{::main})}">
@@ -16,11 +17,13 @@
         <!-- Présentation de Tunis'IA -->
         <section class="accueil-hero card">
 
-            <div class="accueil-logo ">
-                <img th:src="@{../img/logo_sinj_tounsi.png}"
+            <!-- Logo -->
+            <div class="accueil-logo">
+                <img th:src="@{/img/logo_sinj_tounsi.png}"
                      alt="Logo Tunis'IA">
             </div>
 
+            <!-- Texte de présentation -->
             <div class="accueil-presentation">
 
                 <h1>Tunis'IA</h1>
@@ -31,6 +34,7 @@
                     Le chat est réservé aux comptes inscrits.
                 </p>
 
+                <!-- Boutons -->
                 <div class="accueil-boutons">
 
                     <a th:href="@{/connexion}"
@@ -39,7 +43,7 @@
                     </a>
 
                     <a th:href="@{/inscription}"
-                       class="btn btn-outline-light">
+                       class="btn bouton-inscription">
                         Créer un compte
                     </a>
 
@@ -57,12 +61,11 @@
 
             <div class="row g-3">
 
-                <!-- Les modèles seront ajoutés ici -->
-
+                <!-- Message si aucun modèle n'est disponible -->
                 <div class="col-12">
 
                     <div class="modele-vide">
-                        Les modèles d'IA disponibles seront affichés ici.
+                        Aucun modèle n'est disponible pour le moment.
                     </div>
 
                 </div>

@@ -11,11 +11,14 @@
 
             <!-- Logo et nom du site -->
             <a class="navbar-brand" th:href="@{/}">
+
                 <img th:src="@{/img/logo_sinj_tounsi.png}"
                      alt="Logo Tunis'IA"
                      width="40"
                      height="40">
+
                 Tunis'IA
+
             </a>
 
             <!-- Bouton du menu sur mobile -->
@@ -36,31 +39,65 @@
 
                 <ul class="navbar-nav ms-auto">
 
+                    <!-- Accueil -->
                     <li class="nav-item">
-                        <a class="nav-link active" th:href="@{/}">
+                        <a class="nav-link"
+                           th:href="@{/}"
+                           th:classappend="${#httpServletRequest.requestURI == '/'} ? 'active' : ''">
                             Accueil
                         </a>
                     </li>
 
+                    <!-- Chat -->
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/chat}">
-                            Chatbot
+                        <a class="nav-link"
+                           th:href="@{/chat}"
+                           th:classappend="${#httpServletRequest.requestURI == '/chat'} ? 'active' : ''">
+                            Chat
                         </a>
                     </li>
 
+                    <!-- Administration -->
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/admin}">
                             Administration
                         </a>
                     </li>
 
+                    <!-- Détails -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/details}">
+                            Détails
+                        </a>
+                    </li>
+
+                    <!-- Connexion -->
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/connexion}">
                             Connexion
                         </a>
                     </li>
 
+                    <!-- Plan du site -->
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/plan-du-site}">
+                            Plan du site
+                        </a>
+                    </li>
+
                 </ul>
+
+                <!-- Informations utilisateur -->
+                <span class="navbar-text ms-lg-3">
+                    Visiteur
+                </span>
+
+                <!-- Déconnexion -->
+                <button class="btn btn-outline-light btn-sm ms-lg-3"
+                        type="button"
+                        hidden>
+                    Se déconnecter
+                </button>
 
             </div>
 

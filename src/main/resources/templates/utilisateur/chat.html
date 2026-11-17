@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+    <title>Chat - Tunis'IA</title>
+</head>
+
+<body>
+
+<main>
+
+    <div class="chat-container">
+
+        <!-- Barre latérale : conversations -->
+        <aside class="chat-sidebar">
+
+            <!-- Nom du site -->
+            <div class="chat-brand">
+                <img th:src="@{/img/logo_sinj_tounsi.png}"
+                     alt="Logo Tunis'IA">
+                <span>Tunis'IA</span>
+            </div>
+
+            <!-- Nouvelle conversation -->
+            <button class="btn chat-new-button"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#nouvelleConversation">
+                + Nouvelle conversation
+            </button>
+
+            <!-- Historique -->
+            <p class="chat-section-title">Mes conversations</p>
+
+            <div class="chat-history">
+
+                <a href="#" class="chat-conversation active">
+                    Révision SQL – jointures
+                    <small>Mistral Small 4</small>
+                </a>
+
+                <a href="#" class="chat-conversation">
+                    Plan de dissertation
+                    <small>Claude Haiku 4.5</small>
+                </a>
+
+                <a href="#" class="chat-conversation">
+                    Explication de Spring MVC
+                    <small>Gemini 2.5 Flash-Lite</small>
+                </a>
+
+            </div>
+
+            <!-- Informations utilisateur -->
+            <div class="chat-user">
+
+                <div class="chat-avatar">U</div>
+
+                <div>
+                    <span>Utilisateur</span>
+                    <br>
+                    <a th:href="@{/admin}">Administration</a>
+                </div>
+
+                <button class="btn btn-outline-secondary btn-sm ms-auto"
+                        type="button">
+                    Quitter
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- Zone principale du chat -->
+        <section class="chat-main">
+
+            <!-- Barre supérieure -->
+            <div class="chat-topbar">
+
+                <div>
+                    <h1>Révision SQL – jointures</h1>
+
+                    <span class="chat-model-badge">
+                        Mistral Small 4
+                    </span>
+
+                    <span class="chat-model-info">
+                        Modèle fixé à la création
+                    </span>
+                </div>
+
+                <button class="btn btn-outline-secondary btn-sm"
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#nouvelleConversation">
+                    + Nouvelle
+                </button>
+
+            </div>
+
+
+            <!-- Messages -->
+            <div class="chat-messages">
+
+                <!-- Message utilisateur -->
+                <div class="chat-message user-message">
+
+                    <div class="chat-message-author">
+                        Vous
+                    </div>
+
+                    <p>
+                        Peux-tu m'expliquer la différence entre
+                        INNER JOIN et LEFT JOIN ?
+                    </p>
+
+                </div>
+
+
+                <!-- Réponse de l'IA -->
+                <div class="chat-message assistant-message">
+
+                    <div class="chat-message-author">
+                        Mistral Small 4
+                    </div>
+
+                    <h4>INNER JOIN et LEFT JOIN</h4>
+
+                    <p>
+                        <strong>INNER JOIN</strong> ne garde que les lignes
+                        ayant une correspondance dans les deux tables.
+                    </p>
+
+                    <p>
+                        <strong>LEFT JOIN</strong> garde toutes les lignes
+                        de la table de gauche, même lorsqu'il n'existe
+                        aucune correspondance dans la deuxième table.
+                        Dans ce cas, les valeurs sont remplacées par
+                        <code>NULL</code>.
+                    </p>
+
+                    <pre><code>SELECT c.titre, u.email
+FROM conversation c
+LEFT JOIN utilisateur u
+ON u.id = c.utilisateur_id;</code></pre>
+
+                </div>
+
+            </div>
+
+
+            <!-- Zone de saisie -->
+            <div class="chat-compose">
+
+                <div class="chat-input-container">
+
+                    <input type="text"
+                           placeholder="Écrivez votre message…"
+                           aria-label="Votre message">
+
+                    <button class="btn bouton-connexion"
+                            type="button">
+                        Envoyer
+                    </button>
+
+                </div>
+
+                <p class="chat-hint">
+                    Les réponses en Markdown sont affichées en HTML nettoyé.
+                </p>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+    <!-- Fenêtre : nouvelle conversation -->
+    <div class="modal fade"
+         id="nouvelleConversation"
+         tabindex="-1"
+         aria-labelledby="nouvelleConversationTitre"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content">
+
+                <!-- En-tête -->
+                <div class="modal-header">
+
+                    <h2 class="modal-title fs-5"
+                        id="nouvelleConversationTitre">
+                        Nouvelle conversation
+                    </h2>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Fermer">
+                    </button>
+
+                </div>
+
+
+                <!-- Contenu -->
+                <div class="modal-body">
+
+                    <p class="chat-modal-description">
+                        Choisissez le modèle d'IA.
+                        Il restera le même pendant toute la conversation.
+                    </p>
+
+                    <form>
+
+                        <!-- Mistral -->
+                        <label class="chat-model-option">
+
+                            <input type="radio"
+                                   name="modele"
+                                   value="mistral-small-4"
+                                   checked>
+
+                            <span>
+                                <strong>Mistral Small 4</strong>
+
+                                <small>
+                                    Rapide et économique, pour les questions
+                                    courantes et le code.
+                                </small>
+                            </span>
+
+                        </label>
+
+
+                        <!-- Claude -->
+                        <label class="chat-model-option">
+
+                            <input type="radio"
+                                   name="modele"
+                                   value="claude-haiku-4-5">
+
+                            <span>
+                                <strong>Claude Haiku 4.5</strong>
+
+                                <small>
+                                    Réponses claires et structurées,
+                                    bon pour rédiger et expliquer.
+                                </small>
+                            </span>
+
+                        </label>
+
+
+                        <!-- Gemini -->
+                        <label class="chat-model-option">
+
+                            <input type="radio"
+                                   name="modele"
+                                   value="gemini-2.5-flash-lite">
+
+                            <span>
+                                <strong>Gemini 2.5 Flash-Lite</strong>
+
+                                <small>
+                                    Très rapide, adapté aux réponses courtes.
+                                </small>
+                            </span>
+
+                        </label>
+
+
+                        <!-- Titre de la conversation -->
+                        <label class="chat-title-label">
+                            Titre (facultatif)
+
+                            <input type="text"
+                                   class="form-control mt-2"
+                                   placeholder="Ex. Révision SQL">
+                        </label>
+
+                    </form>
+
+                </div>
+
+
+                <!-- Boutons -->
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn bouton-connexion">
+                        Commencer la conversation
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Annuler
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

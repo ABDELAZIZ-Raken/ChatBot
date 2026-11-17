@@ -15,4 +15,8 @@ class ChatBotController {
     fun connexion(): String {
         return "auth/connexion"
     }
+    @GetMapping("/chat")
+    fun chat(): String {
+        return "utilisateur/chat"
+    }
 }
