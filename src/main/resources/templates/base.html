@@ -4,40 +4,19 @@
       th:fragment="layout(titre, contenu)">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title th:replace="${titre}">Tunis'IA</title>
 
-    <!-- Bootstrap -->
-    <link rel="stylesheet"
-          th:href="@{/vendor/css/bootstrap.min.css}">
-
-    <!-- CSS personnalisé -->
-    <link rel="stylesheet"
-          th:href="@{/css/style.css}">
-
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 
-<body class="d-flex flex-column min-vh-100">
+<body>
 
-<!-- Header -->
 <header th:replace="~{fragments/header :: header}"></header>
 
-<!-- Contenu de la page -->
-<main class="flex-grow-1"
-      th:replace="${contenu}">
-</main>
-
-<!-- Footer -->
-<footer th:replace="~{fragments/footer :: footer}"></footer>
-
-<!-- JavaScript Bootstrap -->
-<script th:src="@{/vendor/js/bootstrap.bundle.min.js}"></script>
-
-<!-- JavaScript personnalisé -->
-<script th:src="@{/vendor/js/script.js}"></script>
+<main th:replace="${contenu}"></main>
 
 </body>
 </html>

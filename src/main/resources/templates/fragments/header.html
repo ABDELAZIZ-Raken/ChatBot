@@ -1,111 +1,40 @@
 <!DOCTYPE html>
-
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 
-<header th:fragment="header">
+<nav class="top" th:fragment="header" aria-label="Navigation principale">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <img th:src="@{/img/logo_sinj_tounsi.png}" alt="">
+    <b>Tunis’IA</b>
 
-        <div class="container">
+    <a th:href="@{/}"
+       th:classappend="${page == 'accueil'} ? 'on'">Accueil</a>
 
-            <!-- Logo et nom du site -->
-            <a class="navbar-brand" th:href="@{/}">
+    <a th:if="${compte != null}" th:href="@{/chat}"
+       th:classappend="${page == 'chat'} ? 'on'">Chat</a>
 
-                <img th:src="@{/img/logo_sinj_tounsi.png}"
-                     alt="Logo Tunis'IA"
-                     width="40"
-                     height="40">
+    <a th:if="${compte != null and compte.estAdmin}" th:href="@{/administration}"
+       th:classappend="${page == 'administration'} ? 'on'">Administration</a>
 
-                Tunis'IA
+    <a th:if="${compte != null and compte.estAdmin and detailId != null}"
+       th:href="@{/administration/modeles/{id}(id=${detailId})}"
+       th:classappend="${page == 'detail'} ? 'on'">Détails</a>
 
-            </a>
+    <a th:if="${compte == null}" th:href="@{/connexion}"
+       th:classappend="${page == 'connexion'} ? 'on'">Connexion</a>
 
-            <!-- Bouton du menu sur mobile -->
-            <button class="navbar-toggler"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarContent"
-                    aria-controls="navbarContent"
-                    aria-expanded="false"
-                    aria-label="Ouvrir le menu">
+    <a th:href="@{/plan-du-site}"
+       th:classappend="${page == 'plan'} ? 'on'">Plan du site</a>
 
-                <span class="navbar-toggler-icon"></span>
+    <span class="who"
+          th:text="${compte != null ? (compte.estAdmin ? 'Administrateur · ' : 'Utilisateur · ') + compte.email : 'Visiteur'}">Visiteur</span>
 
-            </button>
+    <form class="top-form" th:if="${compte != null}"
+          th:action="@{/deconnexion}" method="post">
+        <button class="out" type="submit">Se déconnecter</button>
+    </form>
 
-            <!-- Liens de navigation -->
-            <div class="collapse navbar-collapse" id="navbarContent">
-
-                <ul class="navbar-nav ms-auto">
-
-                    <!-- Accueil -->
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:href="@{/}"
-                           th:classappend="${#httpServletRequest.requestURI == '/'} ? 'active' : ''">
-                            Accueil
-                        </a>
-                    </li>
-
-                    <!-- Chat -->
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           th:href="@{/chat}"
-                           th:classappend="${#httpServletRequest.requestURI == '/chat'} ? 'active' : ''">
-                            Chat
-                        </a>
-                    </li>
-
-                    <!-- Administration -->
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/admin}">
-                            Administration
-                        </a>
-                    </li>
-
-                    <!-- Détails -->
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/details}">
-                            Détails
-                        </a>
-                    </li>
-
-                    <!-- Connexion -->
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/connexion}">
-                            Connexion
-                        </a>
-                    </li>
-
-                    <!-- Plan du site -->
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/plan-du-site}">
-                            Plan du site
-                        </a>
-                    </li>
-
-                </ul>
-
-                <!-- Informations utilisateur -->
-                <span class="navbar-text ms-lg-3">
-                    Visiteur
-                </span>
-
-                <!-- Déconnexion -->
-                <button class="btn btn-outline-light btn-sm ms-lg-3"
-                        type="button"
-                        hidden>
-                    Se déconnecter
-                </button>
-
-            </div>
-
-        </div>
-
-    </nav>
-
-</header>
+</nav>
 
 </body>
 </html>

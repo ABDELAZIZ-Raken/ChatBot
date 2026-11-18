@@ -4,70 +4,78 @@
       th:replace="~{base :: layout(~{::title}, ~{::main})}">
 
 <head>
-  <title>Connexion - TodoApp</title>
+  <title th:text="${inscription} ? 'Créer un compte - Tunis’IA' : 'Connexion - Tunis’IA'">Connexion - Tunis’IA</title>
 </head>
 
 <body>
 
-<main class="container py-5">
+<main>
+  <div class="login">
 
-  <div class="row justify-content-center">
+    <!-- Bandeau rouge à gauche -->
+    <div class="hero">
+      <img th:src="@{/img/logo_sinj_tounsi.png}" alt="Logo Tunis’IA">
+      <h2>Tunis’IA</h2>
+      <p>Discutez avec plusieurs modèles d’IA et retrouvez vos échanges.</p>
+    </div>
 
-    <div class="col-md-6 col-lg-4">
+    <!-- Formulaire à droite -->
+    <div class="formbox">
+      <form method="post"
+            th:action="${inscription} ? @{/inscription} : @{/connexion}">
 
-      <div class="card shadow-sm">
+        <h1 th:text="${inscription} ? 'Créer un compte' : 'Connexion'">Connexion</h1>
 
-        <div class="card-body p-4">
+        <label>Adresse e-mail
+          <input name="email" type="text" inputmode="email"
+                 autocomplete="username"
+                 placeholder="prenom.nom@lycee.fr">
+        </label>
 
-          <h2 class="text-center mb-4">
-            Connexion
-          </h2>
+        <label>Mot de passe
+          <input name="password" type="password"
+                 autocomplete="current-password"
+                 placeholder="••••••••">
+        </label>
 
-          <form>
+        <!-- Uniquement à l'inscription -->
+        <label th:if="${inscription}">Confirmer le mot de passe
+          <input name="confirmation" type="password"
+                 autocomplete="new-password"
+                 placeholder="••••••••">
+        </label>
 
-            <div class="mb-3">
+        <!-- Message d'erreur (renvoyé par le contrôleur) -->
+        <p class="login-erreur" role="alert" th:if="${erreur}" th:text="${erreur}">
+          Message d'erreur
+        </p>
 
-              <label for="email" class="form-label">
-                Adresse e-mail
-              </label>
+        <button class="btn" type="submit"
+                th:text="${inscription} ? 'Créer mon compte' : 'Se connecter'">
+          Se connecter
+        </button>
 
-              <input type="email"
-                     class="form-control"
-                     id="email"
-                     placeholder="exemple@mail.com"
-                     required>
+        <p class="login-bascule">
+                    <span th:text="${inscription} ? 'Déjà un compte ?' : 'Pas encore de compte ?'">
+                        Pas encore de compte ?
+                    </span>
+          <a class="lnk"
+             th:href="${inscription} ? @{/connexion} : @{/inscription}"
+             th:text="${inscription} ? 'Se connecter' : 'Créer un compte'">
+            Créer un compte
+          </a>
+        </p>
 
-            </div>
+        <p class="demo" th:unless="${inscription}">
+          Comptes de démonstration<br>
+          Utilisateur : mail@gmail.com / 123<br>
+          Administrateur : admin@gmail.com / admin
+        </p>
 
-            <div class="mb-3">
-
-              <label for="password" class="form-label">
-                Mot de passe
-              </label>
-
-              <input type="password"
-                     class="form-control"
-                     id="password"
-                     placeholder="Votre mot de passe"
-                     required>
-
-            </div>
-
-            <button type="submit"
-                    class="btn btn-primary w-100">
-              Se connecter
-            </button>
-
-          </form>
-
-        </div>
-
-      </div>
-
+      </form>
     </div>
 
   </div>
-
 </main>
 
 </body>

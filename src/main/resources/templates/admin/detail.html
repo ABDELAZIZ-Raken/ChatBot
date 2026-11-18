@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>Détails du modèle - Tunis'IA</title>
+</head>
+
+<body>
+
+<main>
+  <div class="page">
+
+    <p class="crumb">
+      <a th:href="@{/administration}">Modèles d’IA</a> /
+      <span th:text="${modele.nom}">Mistral Small 4</span>
+    </p>
+
+    <div class="card">
+      <div class="det">
+
+        <img th:src="@{/img/logo_sinj_tounsi.png}" alt="Logo du modèle">
+
+        <div>
+          <h1 class="det-titre" th:text="${modele.nom}">Mistral Small 4</h1>
+          <span class="pill" th:classappend="${!modele.actif} ? 'off'"
+                th:text="${modele.actif} ? 'Actif' : 'Inactif'">Actif</span>
+
+          <p class="det-desc" th:text="${modele.description}">Description</p>
+
+          <dl>
+            <dt>Fournisseur</dt>
+            <dd th:text="${modele.fournisseur}">Mistral</dd>
+            <dt>Identifiant API</dt>
+            <dd th:text="${modele.identifiant}">mistral-small-4</dd>
+            <dt>URL de l’API</dt>
+            <dd th:text="${modele.urlApi}">https://api.mistral.ai/v1/chat/completions</dd>
+            <dt>Conversations</dt>
+            <dd th:text="${nbConversations}">128</dd>
+          </dl>
+
+          <div class="row">
+            <a class="btn" th:href="@{/administration}">Modifier dans l’administration</a>
+
+            <form method="post"
+                  th:action="@{/administration/modeles/{id}/statut(id=${modele.id})}">
+              <input type="hidden" name="detail" value="true">
+              <button class="btn alt" type="submit"
+                      th:text="${modele.actif} ? 'Désactiver' : 'Activer'">Désactiver</button>
+            </form>
+
+            <form method="post"
+                  th:action="@{/administration/modeles/{id}/supprimer(id=${modele.id})}">
+              <button class="btn danger arm-btn" type="submit"
+                      data-arm="Confirmer">Supprimer</button>
+            </form>
+
+            <a class="btn alt" th:href="@{/administration}">Retour à la liste</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script th:src="@{/js/admin.js}"></script>
+</main>
+
+</body>
+</html>

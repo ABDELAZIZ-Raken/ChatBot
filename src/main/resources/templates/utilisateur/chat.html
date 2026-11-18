@@ -10,306 +10,153 @@
 <body>
 
 <main>
+    <div class="shell">
 
-    <div class="chat-container">
-
-        <!-- Barre latérale : conversations -->
-        <aside class="chat-sidebar">
-
-            <!-- Nom du site -->
-            <div class="chat-brand">
-                <img th:src="@{/img/logo_sinj_tounsi.png}"
-                     alt="Logo Tunis'IA">
-                <span>Tunis'IA</span>
+        <!-- Barre latérale -->
+        <aside>
+            <div class="brand">
+                <img th:src="@{/img/logo_sinj_tounsi.png}" alt="">Tunis’IA
             </div>
 
-            <!-- Nouvelle conversation -->
-            <button class="btn chat-new-button"
-                    type="button"
-                    data-bs-toggle="modal"
-                    data-bs-target="#nouvelleConversation">
-                + Nouvelle conversation
-            </button>
+            <button class="btn" type="button" id="newBtn">+ Nouvelle conversation</button>
 
-            <!-- Historique -->
-            <p class="chat-section-title">Mes conversations</p>
+            <p class="sec">Mes conversations</p>
 
-            <div class="chat-history">
+            <div>
+                <div class="crow" th:each="c : ${conversations}">
+                    <a class="conv"
+                       th:classappend="${c.id == courante.id} ? 'on'"
+                       th:href="@{/chat(id=${c.id})}">
+                        <span th:text="${c.titre}">Titre</span>
+                        <small th:text="${c.modele}">Modèle</small>
+                    </a>
 
-                <a href="#" class="chat-conversation active">
-                    Révision SQL – jointures
-                    <small>Mistral Small 4</small>
-                </a>
-
-                <a href="#" class="chat-conversation">
-                    Plan de dissertation
-                    <small>Claude Haiku 4.5</small>
-                </a>
-
-                <a href="#" class="chat-conversation">
-                    Explication de Spring MVC
-                    <small>Gemini 2.5 Flash-Lite</small>
-                </a>
-
-            </div>
-
-            <!-- Informations utilisateur -->
-            <div class="chat-user">
-
-                <div class="chat-avatar">U</div>
-
-                <div>
-                    <span>Utilisateur</span>
-                    <br>
-                    <a th:href="@{/admin}">Administration</a>
+                    <!-- Suppression : 1er clic = « Supprimer ? », 2e clic = envoi (chat.js) -->
+                    <form th:action="@{/chat/{id}/supprimer(id=${c.id})}" method="post">
+                        <button class="cdel" type="submit"
+                                th:attr="aria-label='Supprimer la conversation ' + ${c.titre}"
+                                title="Supprimer cette conversation">×</button>
+                    </form>
                 </div>
-
-                <button class="btn btn-outline-secondary btn-sm ms-auto"
-                        type="button">
-                    Quitter
-                </button>
-
             </div>
 
+            <div class="side-foot">
+    <span class="av"
+          th:text="${#strings.toUpperCase(#strings.substring(compte.email, 0, 1))}">U</span>
+                <span>
+        <span th:text="${compte.email}">Utilisateur</span><br>
+        <a class="lien-admin" th:if="${compte.estAdmin}"
+           th:href="@{/administration}">Administration</a>
+    </span>
+                <form class="side-foot-quit" th:action="@{/deconnexion}" method="post">
+                    <button class="btn alt sm" type="submit">Quitter</button>
+                </form>
+            </div>
         </aside>
 
-
-        <!-- Zone principale du chat -->
+        <!-- Zone principale -->
         <section class="chat-main">
 
-            <!-- Barre supérieure -->
-            <div class="chat-topbar">
-
+            <div class="bar">
                 <div>
-                    <h1>Révision SQL – jointures</h1>
+                    <h1 th:text="${courante != null} ? ${courante.titre} : 'Tunis’IA'">Titre</h1>
+                    <span class="pill" th:if="${courante != null}" th:text="${courante.modele}">Modèle</span>
+                    <span class="bar-info" th:if="${courante != null}">modèle fixé à la création</span>
+                </div>
+                <button class="btn alt sm mnew" type="button" id="newBtn2">+ Nouvelle</button>
+            </div>
 
-                    <span class="chat-model-badge">
-                        Mistral Small 4
-                    </span>
+            <div class="msgs">
 
-                    <span class="chat-model-info">
-                        Modèle fixé à la création
-                    </span>
+                <!-- Aucune conversation -->
+                <div class="empty" th:if="${courante == null}">
+                    <h2>Aucune conversation</h2>
+                    <button class="btn" type="button" id="emptyNew">+ Nouvelle conversation</button>
                 </div>
 
-                <button class="btn btn-outline-secondary btn-sm"
-                        type="button"
-                        data-bs-toggle="modal"
-                        data-bs-target="#nouvelleConversation">
-                    + Nouvelle
-                </button>
+                <!-- Conversation vide -->
+                <div class="empty" th:if="${courante != null and courante.messages.isEmpty()}">
+                    <h2>Comment puis-je vous aider ?</h2>
+                    <p class="empty-info">La conversation est enregistrée dès votre premier message.</p>
+                    <div class="chips">
+                        <button class="chip" type="button">Explique-moi les jointures SQL</button>
+                        <button class="chip" type="button">Corrige mon texte</button>
+                        <button class="chip" type="button">Résume ce cours</button>
+                    </div>
+                </div>
+
+                <!-- Messages -->
+                <th:block th:if="${courante != null}">
+                    <div class="m" th:each="m : ${courante.messages}"
+                         th:classappend="${m.utilisateur} ? 'u'">
+
+                        <!-- Message de l'élève : texte brut -->
+                        <th:block th:if="${m.utilisateur}" th:text="${m.contenu}"></th:block>
+
+                        <!-- Réponse de l'IA -->
+                        <th:block th:unless="${m.utilisateur}">
+                            <div class="who" th:text="${courante.modele}">Modèle</div>
+                            <div th:utext="${m.contenu}">Réponse</div>
+                        </th:block>
+                    </div>
+                </th:block>
 
             </div>
 
+            <div class="compose">
 
-            <!-- Messages -->
-            <div class="chat-messages">
-
-                <!-- Message utilisateur -->
-                <div class="chat-message user-message">
-
-                    <div class="chat-message-author">
-                        Vous
+                <!-- Saisie d'un message -->
+                <form method="post" th:if="${courante != null}"
+                      th:action="@{/chat/{id}/message(id=${courante.id})}">
+                    <div>
+                        <input id="inp" name="texte" autocomplete="off"
+                               aria-label="Votre message" placeholder="Écrivez votre message…">
+                        <button class="btn" type="submit">Envoyer</button>
                     </div>
+                </form>
 
-                    <p>
-                        Peux-tu m'expliquer la différence entre
-                        INNER JOIN et LEFT JOIN ?
-                    </p>
-
+                <!-- Sans conversation : saisie désactivée -->
+                <div th:if="${courante == null}">
+                    <input aria-label="Votre message" placeholder="Écrivez votre message…" disabled>
+                    <button class="btn" type="button" disabled>Envoyer</button>
                 </div>
 
-
-                <!-- Réponse de l'IA -->
-                <div class="chat-message assistant-message">
-
-                    <div class="chat-message-author">
-                        Mistral Small 4
-                    </div>
-
-                    <h4>INNER JOIN et LEFT JOIN</h4>
-
-                    <p>
-                        <strong>INNER JOIN</strong> ne garde que les lignes
-                        ayant une correspondance dans les deux tables.
-                    </p>
-
-                    <p>
-                        <strong>LEFT JOIN</strong> garde toutes les lignes
-                        de la table de gauche, même lorsqu'il n'existe
-                        aucune correspondance dans la deuxième table.
-                        Dans ce cas, les valeurs sont remplacées par
-                        <code>NULL</code>.
-                    </p>
-
-                    <pre><code>SELECT c.titre, u.email
-FROM conversation c
-LEFT JOIN utilisateur u
-ON u.id = c.utilisateur_id;</code></pre>
-
-                </div>
-
-            </div>
-
-
-            <!-- Zone de saisie -->
-            <div class="chat-compose">
-
-                <div class="chat-input-container">
-
-                    <input type="text"
-                           placeholder="Écrivez votre message…"
-                           aria-label="Votre message">
-
-                    <button class="btn bouton-connexion"
-                            type="button">
-                        Envoyer
-                    </button>
-
-                </div>
-
-                <p class="chat-hint">
-                    Les réponses en Markdown sont affichées en HTML nettoyé.
-                </p>
-
+                <p class="hint">Les réponses en Markdown sont affichées en HTML nettoyé.</p>
             </div>
 
         </section>
-
     </div>
-
 
     <!-- Fenêtre : nouvelle conversation -->
-    <div class="modal fade"
-         id="nouvelleConversation"
-         tabindex="-1"
-         aria-labelledby="nouvelleConversationTitre"
-         aria-hidden="true">
+    <dialog id="dlg" aria-labelledby="dt">
+        <form method="post" th:action="@{/chat/nouvelle}">
 
-        <div class="modal-dialog modal-dialog-centered">
+            <h2 id="dt">Nouvelle conversation</h2>
+            <p class="dlg-info">Choisissez le modèle d’IA. Il restera le même pendant toute la conversation.</p>
 
-            <div class="modal-content">
-
-                <!-- En-tête -->
-                <div class="modal-header">
-
-                    <h2 class="modal-title fs-5"
-                        id="nouvelleConversationTitre">
-                        Nouvelle conversation
-                    </h2>
-
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Fermer">
-                    </button>
-
-                </div>
-
-
-                <!-- Contenu -->
-                <div class="modal-body">
-
-                    <p class="chat-modal-description">
-                        Choisissez le modèle d'IA.
-                        Il restera le même pendant toute la conversation.
-                    </p>
-
-                    <form>
-
-                        <!-- Mistral -->
-                        <label class="chat-model-option">
-
-                            <input type="radio"
-                                   name="modele"
-                                   value="mistral-small-4"
-                                   checked>
-
-                            <span>
-                                <strong>Mistral Small 4</strong>
-
-                                <small>
-                                    Rapide et économique, pour les questions
-                                    courantes et le code.
-                                </small>
-                            </span>
-
-                        </label>
-
-
-                        <!-- Claude -->
-                        <label class="chat-model-option">
-
-                            <input type="radio"
-                                   name="modele"
-                                   value="claude-haiku-4-5">
-
-                            <span>
-                                <strong>Claude Haiku 4.5</strong>
-
-                                <small>
-                                    Réponses claires et structurées,
-                                    bon pour rédiger et expliquer.
-                                </small>
-                            </span>
-
-                        </label>
-
-
-                        <!-- Gemini -->
-                        <label class="chat-model-option">
-
-                            <input type="radio"
-                                   name="modele"
-                                   value="gemini-2.5-flash-lite">
-
-                            <span>
-                                <strong>Gemini 2.5 Flash-Lite</strong>
-
-                                <small>
-                                    Très rapide, adapté aux réponses courtes.
-                                </small>
-                            </span>
-
-                        </label>
-
-
-                        <!-- Titre de la conversation -->
-                        <label class="chat-title-label">
-                            Titre (facultatif)
-
-                            <input type="text"
-                                   class="form-control mt-2"
-                                   placeholder="Ex. Révision SQL">
-                        </label>
-
-                    </form>
-
-                </div>
-
-
-                <!-- Boutons -->
-                <div class="modal-footer">
-
-                    <button type="button"
-                            class="btn bouton-connexion">
-                        Commencer la conversation
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal">
-                        Annuler
-                    </button>
-
-                </div>
-
+            <div class="opts opts-1col">
+                <label class="opt" th:each="mo, st : ${modeles}">
+                    <input type="radio" name="modele" th:value="${mo.nom}" th:checked="${st.first}">
+                    <span>
+                        <b th:text="${mo.nom}">Modèle</b>
+                        <span class="d" th:text="${mo.description}">Description</span>
+                    </span>
+                </label>
             </div>
 
-        </div>
+            <label>Titre (facultatif)
+                <input id="ctitle" name="titre" placeholder="Ex. Révision SQL">
+            </label>
 
-    </div>
+            <div class="row">
+                <button class="btn" type="submit">Commencer la conversation</button>
+                <button class="btn alt" type="button" id="cancel">Annuler</button>
+            </div>
 
+        </form>
+    </dialog>
+
+    <script th:src="@{/js/chat.js}"></script>
 </main>
 
 </body>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+    <title>Administration - Tunis'IA</title>
+</head>
+
+<body>
+
+<main>
+    <div class="shell">
+
+        <!-- Barre latérale -->
+        <aside>
+            <div class="brand">
+                <img th:src="@{/img/logo_sinj_tounsi.png}" alt="">Tunis’IA
+            </div>
+
+            <p class="sec">Administration</p>
+            <a class="conv" th:classappend="${onglet == 'modeles'} ? 'on'"
+               th:href="@{/administration}">Modèles d’IA</a>
+            <a class="conv" th:classappend="${onglet == 'utilisateurs'} ? 'on'"
+               th:href="@{/administration/utilisateurs}">Utilisateurs</a>
+            <a class="conv" th:href="@{/chat}">← Retour au chat</a>
+
+            <div class="side-foot">
+                <span class="av">AD</span>
+                <span>Admin</span>
+                <form class="side-foot-quit" th:action="@{/deconnexion}" method="post">
+                    <button class="btn alt sm" type="submit">Quitter</button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Zone principale -->
+        <section class="chat-main">
+
+            <div class="bar">
+                <h1 th:text="${onglet == 'modeles'} ? 'Administration · Modèles d’IA' : 'Administration · Utilisateurs'">
+                    Administration · Modèles d’IA
+                </h1>
+                <button class="btn" type="button" id="aAdd" th:if="${onglet == 'modeles'}">
+                    + Ajouter un modèle
+                </button>
+            </div>
+
+            <div class="page">
+
+                <!-- ===== Onglet Utilisateurs ===== -->
+                <div class="card" th:if="${onglet == 'utilisateurs'}">
+                    <p class="admin-count">
+                        <b th:text="|${utilisateurs.size()} utilisateur${utilisateurs.size() > 1 ? 's' : ''} inscrit${utilisateurs.size() > 1 ? 's' : ''}|">
+                            2 utilisateurs inscrits
+                        </b>
+                    </p>
+                    <div class="tw">
+                        <table>
+                            <thead>
+                            <tr><th>Adresse e-mail</th><th>Rôle</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="u : ${utilisateurs}">
+                                <td th:text="${u.email}">mail@gmail.com</td>
+                                <td>
+                                    <span class="pill" th:classappend="${!u.estAdmin} ? 'off'"
+                                          th:text="${u.estAdmin} ? 'Administrateur' : 'Utilisateur'">Utilisateur</span>
+                                </td>
+                                <td class="act">
+                                    <span th:if="${u.estAdmin}">—</span>
+                                    <form th:unless="${u.estAdmin}" method="post"
+                                          th:action="@{/administration/utilisateurs/supprimer}">
+                                        <input type="hidden" name="email" th:value="${u.email}">
+                                        <button class="btn danger sm arm-btn" type="submit"
+                                                data-arm="Confirmer">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ===== Onglet Modèles ===== -->
+                <div class="card" th:if="${onglet == 'modeles'}">
+
+                    <div class="tools">
+                        <input id="aQ" aria-label="Rechercher" placeholder="Rechercher un modèle…">
+                        <select id="aF" class="sel-fournisseur" aria-label="Fournisseur">
+                            <option value="">Tous les fournisseurs</option>
+                            <option th:each="f : ${fournisseurs}" th:value="${f}" th:text="${f}">Mistral</option>
+                        </select>
+                    </div>
+
+                    <div class="tw">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Modèle</th><th>Fournisseur</th><th>Identifiant API</th>
+                                <th>Statut</th><th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="aT">
+                            <tr th:each="m : ${modeles}" class="ligne-modele"
+                                th:attr="data-fournisseur=${m.fournisseur},data-recherche=${m.nom + ' ' + m.identifiant}">
+                                <td>
+                                    <span class="av av-inline" th:text="${m.initiales}">MS</span>
+                                    <span th:text="${m.nom}">Mistral Small 4</span>
+                                </td>
+                                <td th:text="${m.fournisseur}">Mistral</td>
+                                <td th:text="${m.identifiant}">mistral-small-4</td>
+                                <td>
+                                    <span class="pill" th:classappend="${!m.actif} ? 'off'"
+                                          th:text="${m.actif} ? 'Actif' : 'Inactif'">Actif</span>
+                                </td>
+                                <td class="act">
+                                    <a class="btn alt sm"
+                                       th:href="@{/administration/modeles/{id}(id=${m.id})}">Voir</a>
+
+                                    <button class="btn alt sm" type="button" data-modifier
+                                            th:attr="data-id=${m.id},data-nom=${m.nom},data-fournisseur=${m.fournisseur},data-identifiant=${m.identifiant},data-url=${m.urlApi},data-description=${m.description},data-actif=${m.actif}">
+                                        Modifier
+                                    </button>
+
+                                    <form method="post" th:action="@{/administration/modeles/{id}/statut(id=${m.id})}">
+                                        <button class="btn alt sm" type="submit"
+                                                th:text="${m.actif} ? 'Désactiver' : 'Activer'">Désactiver</button>
+                                    </form>
+
+                                    <form method="post" th:action="@{/administration/modeles/{id}/supprimer(id=${m.id})}">
+                                        <button class="btn danger sm arm-btn" type="submit"
+                                                data-arm="Confirmer">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p id="aE" class="hint" th:hidden="${!modeles.isEmpty()}" hidden>
+                        Aucun modèle ne correspond. Ajoutez-en un avec « Ajouter un modèle ».
+                    </p>
+                </div>
+
+            </div>
+        </section>
+    </div>
+
+    <!-- Fenêtre : créer / modifier un modèle -->
+    <dialog id="aD" class="dlg-large" aria-labelledby="aH" th:if="${onglet == 'modeles'}">
+        <h2 id="aH">Créer un modèle d’IA</h2>
+
+        <form class="grid2" id="aFm" method="post"
+              th:action="@{/administration/modeles}"
+              th:attr="data-base=@{/administration/modeles}">
+
+            <label>Nom du modèle
+                <input id="fN" name="nom" placeholder="Ex. Mistral Small 4">
+            </label>
+
+            <label>Fournisseur
+                <select id="fP" name="fournisseur">
+                    <option th:each="f : ${fournisseurs}" th:value="${f}" th:text="${f}">Mistral</option>
+                </select>
+            </label>
+
+            <label>Identifiant technique (API)
+                <input id="fI" name="identifiant" placeholder="mistral-small-4">
+            </label>
+
+            <label>URL de l’API
+                <input id="fU" name="urlApi" type="url" placeholder="https://api.exemple.com/v1/chat">
+            </label>
+
+            <label class="full">Description
+                <textarea id="fD" name="description" rows="3"
+                          placeholder="À quoi sert ce modèle ? Pour quels usages ?"></textarea>
+            </label>
+
+            <!-- Logo : l'envoi du fichier sera géré avec la base de données -->
+            <div class="full drop">
+                <span class="av" id="fL">?</span>
+                <span>Logo du modèle (PNG ou SVG, 512 px max)<br>
+                    <input type="file" accept="image/*" class="drop-fichier">
+                </span>
+            </div>
+
+            <label class="full opt-actif">
+                <input id="fA" name="actif" type="checkbox" value="true" checked>
+                Modèle actif et proposé aux utilisateurs
+            </label>
+
+            <p class="full form-erreur" id="fErr" hidden>
+                Renseignez au moins le nom et l’identifiant API.
+            </p>
+
+            <div class="full row">
+                <button class="btn" type="submit" id="fOk">Créer le modèle</button>
+                <button class="btn alt" type="button" id="fNo">Annuler</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script th:src="@{/js/admin.js}"></script>
+</main>
+
+</body>
+</html>

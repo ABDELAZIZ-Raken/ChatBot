@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+    <title>Plan du site - Tunis'IA</title>
+</head>
+
+<body>
+
+<main>
+    <div class="page">
+
+        <h1>Plan du site</h1>
+
+        <pre class="mermaid">
+flowchart TD
+A[Accueil / Chat] --> B[Connexion]
+A --> C[Création de compte]
+A --> D[Chat - conversations]
+D --> D1[Nouvelle conversation - choix du modèle]
+D --> D2[Historique des messages]
+A --> E[Modèles disponibles]
+A --> F[Administration]
+F --> G[Modèles d'IA - tableau]
+G --> G1[Créer un modèle - formulaire]
+G --> G2[Modifier un modèle - formulaire]
+G --> G3[Détails d'un modèle]
+F --> H[Utilisateurs]
+A --> I[Déconnexion]
+</pre>
+
+        <p class="note">Administration réservée au rôle admin (Spring Security, sprint 2).</p>
+
+    </div>
+
+    <!-- Dessine le schéma Mermaid (thème sombre si le système est en mode sombre) -->
+    <script th:src="@{/vendor/js/mermaid.min.js}"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+        });
+    </script>
+</main>
+
+</body>
+</html>
