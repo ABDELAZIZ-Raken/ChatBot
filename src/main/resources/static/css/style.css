@@ -751,3 +751,19 @@ dd { margin: 0; font-size: 14px; }
 @media (max-width: 760px) {
     .grid2, .det { grid-template-columns: 1fr; }
 }
+
+/* Texte d'un message : on conserve les retours à la ligne */
+.texte {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Message d'erreur de l'administration (maquette : #nt) */
+.bandeau {
+    padding: 10px 20px;
+    background: var(--soft);
+    color: var(--red);
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--line);
+}

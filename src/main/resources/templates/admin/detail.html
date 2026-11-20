@@ -20,7 +20,10 @@
     <div class="card">
       <div class="det">
 
-        <img th:src="@{/img/logo_sinj_tounsi.png}" alt="Logo du modèle">
+        <img th:if="${modele.cheminLogo != null}" th:src="@{${modele.cheminLogo}}"
+             alt="Logo du modèle">
+        <span class="av det-initiales" th:if="${modele.cheminLogo == null}"
+              th:text="${modele.initiales}">MS</span>
 
         <div>
           <h1 class="det-titre" th:text="${modele.nom}">Mistral Small 4</h1>
@@ -31,9 +34,9 @@
 
           <dl>
             <dt>Fournisseur</dt>
-            <dd th:text="${modele.fournisseur}">Mistral</dd>
+            <dd th:text="${modele.fournisseur.nom}">Mistral</dd>
             <dt>Identifiant API</dt>
-            <dd th:text="${modele.identifiant}">mistral-small-4</dd>
+            <dd th:text="${modele.identifiantTechnique}">mistral-small-4</dd>
             <dt>URL de l’API</dt>
             <dd th:text="${modele.urlApi}">https://api.mistral.ai/v1/chat/completions</dd>
             <dt>Conversations</dt>

@@ -37,7 +37,7 @@
         <div class="pubgrid" th:if="${!modeles.isEmpty()}">
             <div class="card" th:each="m : ${modeles}">
                 <b th:text="${m.nom}">Nom du modèle</b>
-                <span class="pill" th:text="${m.fournisseur}"
+                <span class="pill" th:text="${m.fournisseur.nom}"
                       style="align-self:flex-start">Fournisseur</span>
                 <span class="desc-modele" th:text="${m.description}">Description</span>
             </div>

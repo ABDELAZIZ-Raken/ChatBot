@@ -37,6 +37,28 @@
         });
     });
 
+    // ----- Rendu Markdown des réponses de l'IA -----
+    if (window.marked && window.DOMPurify) {
+
+        // Les liens s'ouvrent dans un nouvel onglet
+        DOMPurify.addHook('afterSanitizeAttributes', function (n) {
+            if (n.tagName === 'A') {
+                n.setAttribute('target', '_blank');
+                n.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+
+        document.querySelectorAll('.md').forEach(function (el) {
+            const brut = el.textContent;                      // texte Markdown brut
+            const html = marked.parse(brut);                  // Markdown → HTML
+            el.innerHTML = DOMPurify.sanitize(html);          // HTML nettoyé (anti-XSS)
+            el.classList.add('rendu');
+        });
+
+    } else {
+        console.warn('marked ou DOMPurify non chargé : Markdown non converti');
+    }
+
     // ----- Se placer sur le dernier message -----
     if (document.querySelector('.m')) {
         window.scrollTo(0, document.body.scrollHeight);

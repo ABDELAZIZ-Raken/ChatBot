@@ -68,7 +68,7 @@
                 fournisseur: b.dataset.fournisseur,
                 identifiant: b.dataset.identifiant,
                 url: b.dataset.url,
-                description: b.dataset.description,
+                description: b.dataset.description || '',
                 actif: b.dataset.actif === 'true'
             });
         };

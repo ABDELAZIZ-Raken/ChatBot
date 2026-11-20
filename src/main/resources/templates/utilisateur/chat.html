@@ -12,7 +12,7 @@
 <main>
     <div class="shell">
 
-        <!-- Barre latérale -->
+        <!-- Barre latérale : historique -->
         <aside>
             <div class="brand">
                 <img th:src="@{/img/logo_sinj_tounsi.png}" alt="">Tunis’IA
@@ -25,10 +25,10 @@
             <div>
                 <div class="crow" th:each="c : ${conversations}">
                     <a class="conv"
-                       th:classappend="${c.id == courante.id} ? 'on'"
+                       th:classappend="${courante != null and c.id == courante.id} ? 'on'"
                        th:href="@{/chat(id=${c.id})}">
                         <span th:text="${c.titre}">Titre</span>
-                        <small th:text="${c.modele}">Modèle</small>
+                        <small th:text="${c.modele.nom}">Modèle</small>
                     </a>
 
                     <!-- Suppression : 1er clic = « Supprimer ? », 2e clic = envoi (chat.js) -->
@@ -41,13 +41,13 @@
             </div>
 
             <div class="side-foot">
-    <span class="av"
-          th:text="${#strings.toUpperCase(#strings.substring(compte.email, 0, 1))}">U</span>
+                <span class="av"
+                      th:text="${#strings.toUpperCase(#strings.substring(compte.email, 0, 1))}">U</span>
                 <span>
-        <span th:text="${compte.email}">Utilisateur</span><br>
-        <a class="lien-admin" th:if="${compte.estAdmin}"
-           th:href="@{/administration}">Administration</a>
-    </span>
+                    <span th:text="${compte.email}">Utilisateur</span><br>
+                    <a class="lien-admin" th:if="${compte.estAdmin}"
+                       th:href="@{/administration}">Administration</a>
+                </span>
                 <form class="side-foot-quit" th:action="@{/deconnexion}" method="post">
                     <button class="btn alt sm" type="submit">Quitter</button>
                 </form>
@@ -57,15 +57,17 @@
         <!-- Zone principale -->
         <section class="chat-main">
 
+            <!-- Barre du haut : titre et modèle de la conversation -->
             <div class="bar">
                 <div>
                     <h1 th:text="${courante != null} ? ${courante.titre} : 'Tunis’IA'">Titre</h1>
-                    <span class="pill" th:if="${courante != null}" th:text="${courante.modele}">Modèle</span>
+                    <span class="pill" th:if="${courante != null}" th:text="${courante.modele.nom}">Modèle</span>
                     <span class="bar-info" th:if="${courante != null}">modèle fixé à la création</span>
                 </div>
                 <button class="btn alt sm mnew" type="button" id="newBtn2">+ Nouvelle</button>
             </div>
 
+            <!-- Zone des messages -->
             <div class="msgs">
 
                 <!-- Aucune conversation -->
@@ -85,27 +87,29 @@
                     </div>
                 </div>
 
-                <!-- Messages -->
+                <!-- Historique des messages -->
                 <th:block th:if="${courante != null}">
                     <div class="m" th:each="m : ${courante.messages}"
-                         th:classappend="${m.utilisateur} ? 'u'">
+                         th:classappend="${m.typeMessage.name() == 'UTILISATEUR'} ? 'u'">
 
                         <!-- Message de l'élève : texte brut -->
-                        <th:block th:if="${m.utilisateur}" th:text="${m.contenu}"></th:block>
+                        <div class="texte" th:if="${m.typeMessage.name() == 'UTILISATEUR'}"
+                             th:text="${m.contenu}">Message</div>
 
-                        <!-- Réponse de l'IA -->
-                        <th:block th:unless="${m.utilisateur}">
-                            <div class="who" th:text="${courante.modele}">Modèle</div>
-                            <div th:utext="${m.contenu}">Réponse</div>
+                        <!-- Réponse de l'IA : Markdown converti puis nettoyé par chat.js -->
+                        <th:block th:unless="${m.typeMessage.name() == 'UTILISATEUR'}">
+                            <div class="who" th:text="${courante.modele.nom}">Modèle</div>
+                            <div class="md" th:text="${m.contenu}">Réponse</div>
                         </th:block>
                     </div>
                 </th:block>
 
             </div>
 
+            <!-- Zone de saisie -->
             <div class="compose">
 
-                <!-- Saisie d'un message -->
+                <!-- Conversation existante : envoi d'un message -->
                 <form method="post" th:if="${courante != null}"
                       th:action="@{/chat/{id}/message(id=${courante.id})}">
                     <div>
@@ -127,7 +131,7 @@
         </section>
     </div>
 
-    <!-- Fenêtre : nouvelle conversation -->
+    <!-- Fenêtre : nouvelle conversation (choix du modèle) -->
     <dialog id="dlg" aria-labelledby="dt">
         <form method="post" th:action="@{/chat/nouvelle}">
 
@@ -136,7 +140,7 @@
 
             <div class="opts opts-1col">
                 <label class="opt" th:each="mo, st : ${modeles}">
-                    <input type="radio" name="modele" th:value="${mo.nom}" th:checked="${st.first}">
+                    <input type="radio" name="modeleId" th:value="${mo.id}" th:checked="${st.first}">
                     <span>
                         <b th:text="${mo.nom}">Modèle</b>
                         <span class="d" th:text="${mo.description}">Description</span>
@@ -156,6 +160,9 @@
         </form>
     </dialog>
 
+    <!-- Markdown → HTML nettoyé (marked + DOMPurify), puis le script du chat -->
+    <script th:src="@{/vendor/js/marked.min.js}"></script>
+    <script th:src="@{/vendor/js/purify.min.js}"></script>
     <script th:src="@{/js/chat.js}"></script>
 </main>
 

@@ -23,7 +23,7 @@
     <a th:if="${compte == null}" th:href="@{/connexion}"
        th:classappend="${page == 'connexion'} ? 'on'">Connexion</a>
 
-    <a th:href="@{/plan-du-site}"
+    <a th:if="${compte != null and compte.estAdmin}" th:href="@{/plan-du-site}"
        th:classappend="${page == 'plan'} ? 'on'">Plan du site</a>
 
     <span class="who"

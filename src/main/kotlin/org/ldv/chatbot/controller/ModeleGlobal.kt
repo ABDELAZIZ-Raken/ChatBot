@@ -2,12 +2,12 @@ package org.ldv.chatbot.controller
 
 import jakarta.servlet.http.HttpSession
 import org.ldv.chatbot.model.Compte
-import org.ldv.chatbot.service.ModeleService
+import org.ldv.chatbot.model.dao.ModeleIADAO
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ModelAttribute
 
 @ControllerAdvice
-class ModeleGlobal(private val modeleService: ModeleService) {
+class ModeleGlobal(private val modeleIADAO: ModeleIADAO) {
 
     // Le compte connecté (null pour un visiteur), disponible dans toutes les pages
     @ModelAttribute("compte")
@@ -17,7 +17,7 @@ class ModeleGlobal(private val modeleService: ModeleService) {
 
     // Premier modèle, pour le lien « Détails » du header
     @ModelAttribute("detailId")
-    fun detailId(): Int? {
-        return modeleService.tous().firstOrNull()?.id
+    fun detailId(): Long? {
+        return modeleIADAO.findAll().firstOrNull()?.id
     }
 }

@@ -2,27 +2,27 @@ package org.ldv.chatbot.controller
 
 import jakarta.servlet.http.HttpSession
 import org.ldv.chatbot.model.Compte
+import org.ldv.chatbot.model.dao.ModeleIADAO
 import org.ldv.chatbot.service.CompteService
-import org.ldv.chatbot.service.ConversationService
-import org.ldv.chatbot.service.ModeleService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 
 @Controller
 class ChatBotController(
     private val compteService: CompteService,
-    private val modeleService: ModeleService,
-    private val conversationService: ConversationService
+    private val modeleIADAO: ModeleIADAO
 ) {
+
+    // ----- Accueil -----
 
     @GetMapping("/", "/accueil")
     fun accueil(model: Model): String {
         model.addAttribute("page", "accueil")
-        model.addAttribute("modeles", modeleService.actifs())
+        // Les modèles actifs, lus dans la base de données
+        model.addAttribute("modeles", modeleIADAO.findByActifTrue())
         return "utilisateur/accueil"
     }
 
@@ -110,64 +110,13 @@ class ChatBotController(
         return "redirect:/"
     }
 
-    // ----- Chat (réservé aux comptes connectés) -----
-
-    @GetMapping("/chat")
-    fun chat(
-        @RequestParam(required = false) id: Int?,
-        model: Model,
-        session: HttpSession
-    ): String {
-        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
-
-        val conversations = conversationService.deUtilisateur(compte.email)
-        // Conversation choisie dans l'URL (/chat?id=2), sinon la première
-        val courante = conversations.firstOrNull { it.id == id } ?: conversations.firstOrNull()
-
-        model.addAttribute("page", "chat")
-        model.addAttribute("conversations", conversations)
-        model.addAttribute("courante", courante)
-        model.addAttribute("modeles", modeleService.actifs())
-        return "utilisateur/chat"
-    }
-
-    @PostMapping("/chat/nouvelle")
-    fun nouvelleConversation(
-        @RequestParam modele: String,
-        @RequestParam(defaultValue = "") titre: String,
-        session: HttpSession
-    ): String {
-        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
-
-        // Le modèle doit exister et être actif
-        if (modeleService.actifs().none { it.nom == modele }) return "redirect:/chat"
-
-        val conversation = conversationService.creer(compte.email, modele, titre)
-        return "redirect:/chat?id=${conversation.id}"
-    }
-
-    @PostMapping("/chat/{id}/message")
-    fun envoyerMessage(
-        @PathVariable id: Int,
-        @RequestParam(defaultValue = "") texte: String,
-        session: HttpSession
-    ): String {
-        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
-        conversationService.envoyer(compte.email, id, texte)
-        return "redirect:/chat?id=$id"
-    }
-
-    @PostMapping("/chat/{id}/supprimer")
-    fun supprimerConversation(@PathVariable id: Int, session: HttpSession): String {
-        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
-        conversationService.supprimer(compte.email, id)
-        return "redirect:/chat"
-    }
-
-    // ----- Plan du site (public) -----
+    // ----- Plan du site (réservé à l'administrateur) -----
 
     @GetMapping("/plan-du-site")
-    fun planDuSite(model: Model): String {
+    fun planDuSite(model: Model, session: HttpSession): String {
+        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
+        if (!compte.estAdmin) return "redirect:/chat"
+
         model.addAttribute("page", "plan")
         return "utilisateur/plan-du-site"
     }

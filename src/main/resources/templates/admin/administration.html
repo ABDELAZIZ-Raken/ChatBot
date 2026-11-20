@@ -46,6 +46,11 @@
                 </button>
             </div>
 
+            <!-- Message d'erreur (ex. suppression refusée) -->
+            <div class="bandeau" role="status" th:if="${erreur != null}" th:text="${erreur}">
+                Message
+            </div>
+
             <div class="page">
 
                 <!-- ===== Onglet Utilisateurs ===== -->
@@ -89,7 +94,7 @@
                         <input id="aQ" aria-label="Rechercher" placeholder="Rechercher un modèle…">
                         <select id="aF" class="sel-fournisseur" aria-label="Fournisseur">
                             <option value="">Tous les fournisseurs</option>
-                            <option th:each="f : ${fournisseurs}" th:value="${f}" th:text="${f}">Mistral</option>
+                            <option th:each="f : ${fournisseurs}" th:value="${f.nom}" th:text="${f.nom}">Mistral</option>
                         </select>
                     </div>
 
@@ -103,13 +108,16 @@
                             </thead>
                             <tbody id="aT">
                             <tr th:each="m : ${modeles}" class="ligne-modele"
-                                th:attr="data-fournisseur=${m.fournisseur},data-recherche=${m.nom + ' ' + m.identifiant}">
+                                th:attr="data-fournisseur=${m.fournisseur.nom},data-recherche=${m.nom + ' ' + m.identifiantTechnique}">
                                 <td>
-                                    <span class="av av-inline" th:text="${m.initiales}">MS</span>
+                                    <img class="logo-modele" th:if="${m.cheminLogo != null}"
+                                         th:src="@{${m.cheminLogo}}" alt="">
+                                    <span class="av av-inline" th:if="${m.cheminLogo == null}"
+                                          th:text="${m.initiales}">MS</span>
                                     <span th:text="${m.nom}">Mistral Small 4</span>
                                 </td>
-                                <td th:text="${m.fournisseur}">Mistral</td>
-                                <td th:text="${m.identifiant}">mistral-small-4</td>
+                                <td th:text="${m.fournisseur.nom}">Mistral</td>
+                                <td th:text="${m.identifiantTechnique}">mistral-small-4</td>
                                 <td>
                                     <span class="pill" th:classappend="${!m.actif} ? 'off'"
                                           th:text="${m.actif} ? 'Actif' : 'Inactif'">Actif</span>
@@ -119,7 +127,8 @@
                                        th:href="@{/administration/modeles/{id}(id=${m.id})}">Voir</a>
 
                                     <button class="btn alt sm" type="button" data-modifier
-                                            th:attr="data-id=${m.id},data-nom=${m.nom},data-fournisseur=${m.fournisseur},data-identifiant=${m.identifiant},data-url=${m.urlApi},data-description=${m.description},data-actif=${m.actif}">
+                                            th:attr="data-id=${m.id},data-nom=${m.nom},data-fournisseur=${m.fournisseur.id},data-identifiant=${m.identifiantTechnique},data-url=${m.urlApi},data-description=${m.description},data-actif=${m.actif}"
+                                            th:data-logo-url="${m.cheminLogo != null} ? @{${m.cheminLogo}} : ''">
                                         Modifier
                                     </button>
 
@@ -151,22 +160,22 @@
     <dialog id="aD" class="dlg-large" aria-labelledby="aH" th:if="${onglet == 'modeles'}">
         <h2 id="aH">Créer un modèle d’IA</h2>
 
-        <form class="grid2" id="aFm" method="post"
+        <form class="grid2" id="aFm" method="post" enctype="multipart/form-data"
               th:action="@{/administration/modeles}"
               th:attr="data-base=@{/administration/modeles}">
 
             <label>Nom du modèle
-                <input id="fN" name="nom" placeholder="Ex. Mistral Small 4">
+                <input id="fN" name="nom" placeholder="Ex. mistral-small-latest">
             </label>
 
             <label>Fournisseur
-                <select id="fP" name="fournisseur">
-                    <option th:each="f : ${fournisseurs}" th:value="${f}" th:text="${f}">Mistral</option>
+                <select id="fP" name="fournisseurId">
+                    <option th:each="f : ${fournisseurs}" th:value="${f.id}" th:text="${f.nom}">Mistral</option>
                 </select>
             </label>
 
             <label>Identifiant technique (API)
-                <input id="fI" name="identifiant" placeholder="mistral-small-4">
+                <input id="fI" name="identifiant" placeholder="mistral-small-latest">
             </label>
 
             <label>URL de l’API
@@ -178,11 +187,13 @@
                           placeholder="À quoi sert ce modèle ? Pour quels usages ?"></textarea>
             </label>
 
-            <!-- Logo : l'envoi du fichier sera géré avec la base de données -->
+            <!-- Logo du modèle -->
             <div class="full drop">
+                <img id="fImg" alt="Aperçu du logo" hidden>
                 <span class="av" id="fL">?</span>
-                <span>Logo du modèle (PNG ou SVG, 512 px max)<br>
-                    <input type="file" accept="image/*" class="drop-fichier">
+                <span>Logo du modèle (PNG, JPEG ou WebP, 512 px max)<br>
+                    <input type="file" id="fLogo" name="logo" class="drop-fichier"
+                           accept="image/png,image/jpeg,image/webp">
                 </span>
             </div>
 
