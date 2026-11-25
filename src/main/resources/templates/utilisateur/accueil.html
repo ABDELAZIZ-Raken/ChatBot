@@ -24,7 +24,7 @@
                     et retrouvez vos échanges. Le chat est réservé aux comptes inscrits.
                 </p>
                 <div class="row">
-                    <a class="btn" th:if="${compte == null}" th:href="@{/connexion}">Se connecter</a>
+                    <a class="btn" th:if="${compte == null}" th:href="@{/login}">Se connecter</a>
                     <a class="btn" th:if="${compte != null}" th:href="@{/chat}">Ouvrir le chat</a>
                     <a class="btn alt" th:if="${compte == null}" th:href="@{/inscription}">Créer un compte</a>
                 </div>

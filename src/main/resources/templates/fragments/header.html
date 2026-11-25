@@ -10,27 +10,27 @@
     <a th:href="@{/}"
        th:classappend="${page == 'accueil'} ? 'on'">Accueil</a>
 
-    <a th:if="${compte != null}" th:href="@{/chat}"
+    <a th:if="${utilisateur != null}" th:href="@{/chat}"
        th:classappend="${page == 'chat'} ? 'on'">Chat</a>
 
-    <a th:if="${compte != null and compte.estAdmin}" th:href="@{/administration}"
+    <a th:if="${utilisateur != null and utilisateur.estAdmin}" th:href="@{/administration}"
        th:classappend="${page == 'administration'} ? 'on'">Administration</a>
 
-    <a th:if="${compte != null and compte.estAdmin and detailId != null}"
+    <a th:if="${utilisateur != null and utilisateur.estAdmin and detailId != null}"
        th:href="@{/administration/modeles/{id}(id=${detailId})}"
        th:classappend="${page == 'detail'} ? 'on'">Détails</a>
 
-    <a th:if="${compte == null}" th:href="@{/connexion}"
+    <a th:if="${utilisateur == null}" th:href="@{/login}"
        th:classappend="${page == 'connexion'} ? 'on'">Connexion</a>
 
-    <a th:if="${compte != null and compte.estAdmin}" th:href="@{/plan-du-site}"
+    <a th:if="${utilisateur != null and utilisateur.estAdmin}" th:href="@{/plan-du-site}"
        th:classappend="${page == 'plan'} ? 'on'">Plan du site</a>
 
     <span class="who"
-          th:text="${compte != null ? (compte.estAdmin ? 'Administrateur · ' : 'Utilisateur · ') + compte.email : 'Visiteur'}">Visiteur</span>
+          th:text="${utilisateur != null ? (utilisateur.estAdmin ? 'Administrateur · ' : 'Utilisateur · ') + utilisateur.email : 'Visiteur'}">Visiteur</span>
 
-    <form class="top-form" th:if="${compte != null}"
-          th:action="@{/deconnexion}" method="post">
+    <form class="top-form" th:if="${utilisateur != null}"
+          th:action="@{/logout}" method="post">
         <button class="out" type="submit">Se déconnecter</button>
     </form>
 

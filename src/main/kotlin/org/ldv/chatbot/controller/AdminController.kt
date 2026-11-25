@@ -1,7 +1,5 @@
 package org.ldv.chatbot.controller
 
-import jakarta.servlet.http.HttpSession
-import org.ldv.chatbot.model.Compte
 import org.ldv.chatbot.model.dao.ConversationDAO
 import org.ldv.chatbot.model.dao.FournisseurIADAO
 import org.ldv.chatbot.model.dao.ModeleIADAO
@@ -17,29 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
+import org.ldv.chatbot.model.dao.UtilisateurDAO
+import org.springframework.security.core.Authentication
 
+// L'accès à /administration/** est réservé à ROLE_ADMIN dans SecurityConfig
 @Controller
 @RequestMapping("/administration")
 class AdminController(
     private val modeleIADAO: ModeleIADAO,
     private val fournisseurIADAO: FournisseurIADAO,
     private val conversationDAO: ConversationDAO,
-    private val compteService: CompteService,
+    private val utilisateurDAO: UtilisateurDAO,
     private val logoService: LogoService
 ) {
-
-    // Retourne null si le compte est administrateur, sinon la redirection à faire
-    // (comme la maquette : visiteur → connexion, utilisateur → chat)
-    private fun refuser(session: HttpSession): String? {
-        val compte = session.getAttribute("compte") as? Compte ?: return "redirect:/connexion"
-        return if (compte.estAdmin) null else "redirect:/chat"
-    }
 
     // ----- Onglet Modèles d'IA -----
 
     @GetMapping
-    fun modeles(model: Model, session: HttpSession): String {
-        refuser(session)?.let { return it }
+    fun modeles(model: Model): String {
         model.addAttribute("page", "administration")
         model.addAttribute("onglet", "modeles")
         model.addAttribute("modeles", modeleIADAO.findAll())
@@ -55,11 +48,8 @@ class AdminController(
         @RequestParam(defaultValue = "") urlApi: String,
         @RequestParam(defaultValue = "") description: String,
         @RequestParam(defaultValue = "false") actif: Boolean,
-        @RequestParam(required = false) logo: MultipartFile?,
-        session: HttpSession
+        @RequestParam(required = false) logo: MultipartFile?
     ): String {
-        refuser(session)?.let { return it }
-
         val fournisseur = fournisseurIADAO.findById(fournisseurId).orElse(null)
         if (nom.isNotBlank() && identifiant.isNotBlank() && fournisseur != null) {
             modeleIADAO.save(
@@ -86,11 +76,8 @@ class AdminController(
         @RequestParam(defaultValue = "") urlApi: String,
         @RequestParam(defaultValue = "") description: String,
         @RequestParam(defaultValue = "false") actif: Boolean,
-        @RequestParam(required = false) logo: MultipartFile?,
-        session: HttpSession
+        @RequestParam(required = false) logo: MultipartFile?
     ): String {
-        refuser(session)?.let { return it }
-
         val modele = modeleIADAO.findById(id).orElse(null) ?: return "redirect:/administration"
         val fournisseur = fournisseurIADAO.findById(fournisseurId).orElse(null)
 
@@ -118,11 +105,8 @@ class AdminController(
     @PostMapping("/modeles/{id}/statut")
     fun basculer(
         @PathVariable id: Long,
-        @RequestParam(defaultValue = "false") detail: Boolean,
-        session: HttpSession
+        @RequestParam(defaultValue = "false") detail: Boolean
     ): String {
-        refuser(session)?.let { return it }
-
         val modele = modeleIADAO.findById(id).orElse(null) ?: return "redirect:/administration"
         modele.actif = !modele.actif
         modeleIADAO.save(modele)
@@ -133,11 +117,8 @@ class AdminController(
     @PostMapping("/modeles/{id}/supprimer")
     fun supprimer(
         @PathVariable id: Long,
-        session: HttpSession,
         redirectAttributes: RedirectAttributes
     ): String {
-        refuser(session)?.let { return it }
-
         val modele = modeleIADAO.findById(id).orElse(null) ?: return "redirect:/administration"
 
         // Un modèle utilisé par des conversations ne peut pas être supprimé
@@ -157,9 +138,7 @@ class AdminController(
     // ----- Page Détails d'un modèle -----
 
     @GetMapping("/modeles/{id}")
-    fun detail(@PathVariable id: Long, model: Model, session: HttpSession): String {
-        refuser(session)?.let { return it }
-
+    fun detail(@PathVariable id: Long, model: Model): String {
         val modele = modeleIADAO.findById(id).orElse(null) ?: return "redirect:/administration"
         model.addAttribute("page", "detail")
         model.addAttribute("modele", modele)
@@ -167,21 +146,30 @@ class AdminController(
         return "admin/detail"
     }
 
-    // ----- Onglet Utilisateurs (provisoire jusqu'au sprint 2) -----
+    // ----- Onglet Utilisateurs (provisoire : sera branché sur UtilisateurDAO) -----
+
+    // ----- Onglet Utilisateurs -----
 
     @GetMapping("/utilisateurs")
-    fun utilisateurs(model: Model, session: HttpSession): String {
-        refuser(session)?.let { return it }
+    fun utilisateurs(model: Model): String {
         model.addAttribute("page", "administration")
         model.addAttribute("onglet", "utilisateurs")
-        model.addAttribute("utilisateurs", compteService.tous())
+        // Tous les comptes, lus dans la base de données
+        model.addAttribute("utilisateurs", utilisateurDAO.findAll())
         return "admin/administration"
     }
 
     @PostMapping("/utilisateurs/supprimer")
-    fun supprimerUtilisateur(@RequestParam email: String, session: HttpSession): String {
-        refuser(session)?.let { return it }
-        compteService.supprimer(email)
+    fun supprimerUtilisateur(
+        @RequestParam id: Long,
+        authentication: Authentication
+    ): String {
+        val cible = utilisateurDAO.findById(id).orElse(null)
+
+        // On ne supprime ni un administrateur, ni son propre compte
+        if (cible != null && !cible.estAdmin && cible.email != authentication.name) {
+            utilisateurDAO.delete(cible)
+        }
         return "redirect:/administration/utilisateurs"
     }
 }

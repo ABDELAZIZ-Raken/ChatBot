@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>Connexion - Tunis’IA</title>
+</head>
+
+<body>
+
+<main>
+  <div class="login">
+
+    <!-- Bandeau rouge à gauche -->
+    <div class="hero">
+      <img th:src="@{/img/logo_sinj_tounsi.png}" alt="Logo Tunis’IA">
+      <h2>Tunis’IA</h2>
+      <p>Discutez avec plusieurs modèles d’IA et retrouvez vos échanges.</p>
+    </div>
+
+    <!-- Formulaire à droite -->
+    <div class="formbox">
+      <form method="post" th:action="@{/login}">
+
+        <h1>Connexion</h1>
+
+        <label>Adresse e-mail
+          <input name="email" type="text" inputmode="email"
+                 autocomplete="username"
+                 placeholder="prenom.nom@lycee.fr">
+        </label>
+
+        <label>Mot de passe
+          <input name="password" type="password"
+                 autocomplete="current-password"
+                 placeholder="••••••••">
+        </label>
+
+        <!-- Identifiants incorrects -->
+        <p class="login-erreur" role="alert" th:if="${param.error}">
+          Adresse e-mail ou mot de passe incorrect, ou compte désactivé.
+        </p>
+
+        <!-- Déconnexion réussie -->
+        <p class="login-bascule" role="status" th:if="${param.logout}">
+          Vous avez été déconnecté avec succès.
+        </p>
+
+        <button class="btn" type="submit">Se connecter</button>
+
+        <p class="login-bascule">
+          Vous n’avez pas de compte ? Contactez votre administrateur.
+        </p>
+
+        <p class="demo">
+          Comptes de démonstration<br>
+          Utilisateur : doli.prane@email.com / user123<br>
+          Administrateur : admin@email.com / admin123
+        </p>
+      </form>
+    </div>
+
+  </div>
+</main>
+
+</body>
+</html>

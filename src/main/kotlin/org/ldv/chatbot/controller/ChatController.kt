@@ -1,6 +1,5 @@
 package org.ldv.chatbot.controller
 
-import jakarta.servlet.http.HttpSession
 import org.ldv.chatbot.model.dao.ConversationDAO
 import org.ldv.chatbot.model.dao.MessageDAO
 import org.ldv.chatbot.model.dao.ModeleIADAO
@@ -16,22 +15,31 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.time.LocalDateTime
+import org.ldv.chatbot.model.dao.UtilisateurDAO
+import org.ldv.chatbot.model.entity.Utilisateur
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+
 
 @Controller
 class ChatController(
     private val conversationDAO: ConversationDAO,
     private val messageDAO: MessageDAO,
     private val modeleIADAO: ModeleIADAO,
-    private val iaServiceFactory: IAServiceFactory
-) {
+    private val iaServiceFactory: IAServiceFactory,
+    private val utilisateurDAO: UtilisateurDAO
+)
+
+{
 
     private val logger = LoggerFactory.getLogger(ChatController::class.java)
 
     // Titre donné quand l'élève n'en saisit pas : il est remplacé par son 1er message
     private val titreParDefaut = "Nouvelle conversation"
-
-    private fun estConnecte(session: HttpSession): Boolean {
-        return session.getAttribute("compte") != null
+    // Retrouve l'utilisateur connecté à partir de l'objet Authentication de Spring Security
+    private fun getUtilisateurConnecte(authentication: Authentication): Utilisateur {
+        return utilisateurDAO.findByEmailIgnoreCase(authentication.name)
+            ?: throw UsernameNotFoundException("Utilisateur introuvable")
     }
 
     // ----- Afficher le chat -----
@@ -40,9 +48,11 @@ class ChatController(
     fun chat(
         @RequestParam(required = false) id: Long?,
         model: Model,
-        session: HttpSession
+        authentication: Authentication
     ): String {
-        if (!estConnecte(session)) return "redirect:/connexion"
+        // Récupère l'utilisateur de la session et le donne à la vue
+        val utilisateur = getUtilisateurConnecte(authentication)
+        model.addAttribute("utilisateur", utilisateur)
 
         val conversations = conversationDAO.findAllByOrderByDateDerniereModificationDesc()
         // Conversation choisie dans l'URL (/chat?id=2), sinon la plus récente
@@ -60,11 +70,8 @@ class ChatController(
     @PostMapping("/chat/nouvelle")
     fun nouvelleConversation(
         @RequestParam modeleId: Long,
-        @RequestParam(defaultValue = "") titre: String,
-        session: HttpSession
+        @RequestParam(defaultValue = "") titre: String
     ): String {
-        if (!estConnecte(session)) return "redirect:/connexion"
-
         // Le modèle doit exister et être actif
         val modele = modeleIADAO.findById(modeleId).orElse(null)
         if (modele == null || !modele.actif) return "redirect:/chat"
@@ -86,11 +93,8 @@ class ChatController(
     @PostMapping("/chat/{id}/message")
     fun envoyerMessage(
         @PathVariable id: Long,
-        @RequestParam(defaultValue = "") texte: String,
-        session: HttpSession
+        @RequestParam(defaultValue = "") texte: String
     ): String {
-        if (!estConnecte(session)) return "redirect:/connexion"
-
         val conversation = conversationDAO.findById(id).orElse(null)
             ?: return "redirect:/chat"
 
@@ -142,8 +146,7 @@ class ChatController(
     // ----- Supprimer une conversation -----
 
     @PostMapping("/chat/{id}/supprimer")
-    fun supprimerConversation(@PathVariable id: Long, session: HttpSession): String {
-        if (!estConnecte(session)) return "redirect:/connexion"
+    fun supprimerConversation(@PathVariable id: Long): String {
         conversationDAO.deleteById(id)   // ses messages sont supprimés avec elle
         return "redirect:/chat"
     }

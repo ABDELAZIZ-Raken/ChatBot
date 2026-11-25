@@ -42,13 +42,13 @@
 
             <div class="side-foot">
                 <span class="av"
-                      th:text="${#strings.toUpperCase(#strings.substring(compte.email, 0, 1))}">U</span>
+                      th:text="${#strings.toUpperCase(#strings.substring(utilisateur.email, 0, 1))}">U</span>
                 <span>
-                    <span th:text="${compte.email}">Utilisateur</span><br>
-                    <a class="lien-admin" th:if="${compte.estAdmin}"
+                    <span th:text="${utilisateur.email}">Utilisateur</span><br>
+                    <a class="lien-admin" th:if="${utilisateur.estAdmin}"
                        th:href="@{/administration}">Administration</a>
                 </span>
-                <form class="side-foot-quit" th:action="@{/deconnexion}" method="post">
+                <form class="side-foot-quit" th:action="@{/logout}" method="post">
                     <button class="btn alt sm" type="submit">Quitter</button>
                 </form>
             </div>
